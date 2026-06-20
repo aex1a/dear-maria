@@ -1,0 +1,1077 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>dear-maria</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600&family=Lora:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+
+  :root {
+    /* Brand and accents */
+    --color-ink:        #3a2e26;
+    --color-ink-soft:   #5b4c40;
+    --color-paper:      #f6f1e7;
+    --color-paper-dim:  #ece3d2;
+    --color-kraft:      #c9a87c;
+    --color-kraft-dark: #a9824f;
+    --color-seal:       #8b3a3a;
+    --color-seal-dark:  #6e2c2c;
+    --color-sage:       #6b7a5e;
+
+    /* Borders */
+    --color-border:        #d8c6a3;
+    --color-border-strong: #b89a68;
+
+    /* Shadows, kept subtle per house style */
+    --shadow-xs: 0 1px 2px rgba(58, 46, 38, 0.08);
+    --shadow-sm: 0 3px 10px rgba(58, 46, 38, 0.10), 0 1px 2px rgba(58, 46, 38, 0.06);
+    --shadow-md: 0 10px 28px rgba(58, 46, 38, 0.16), 0 2px 6px rgba(58, 46, 38, 0.08);
+    --shadow-lg: 0 18px 50px rgba(58, 46, 38, 0.22), 0 6px 14px rgba(58, 46, 38, 0.10);
+
+    /* Radius scale */
+    --radius-xs: 4px;
+    --radius-sm: 7px;
+    --radius-md: 12px;
+    --radius-lg: 18px;
+    --radius-xl: 26px;
+
+    /* Transitions */
+    --transition-fast: 120ms ease;
+    --transition-base: 220ms ease;
+    --transition-slow: 650ms cubic-bezier(0.22, 0.61, 0.36, 1);
+
+    /* Type */
+    --text-xs: 12px;
+    --text-sm: 14px;
+    --text-base: 16px;
+    --text-md: 18px;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background: var(--color-paper);
+    font-family: 'Lora', Georgia, serif;
+    color: var(--color-ink);
+    overflow: hidden;
+  }
+
+  body {
+    background-image:
+      radial-gradient(circle at 18% 20%, rgba(201,168,124,0.16), transparent 45%),
+      radial-gradient(circle at 82% 78%, rgba(107,122,94,0.10), transparent 50%);
+  }
+
+  .stage {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+
+  /* ---------- layout: envelope + music panel side by side ---------- */
+  .scene {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 48px;
+    width: 100%;
+    max-width: 980px;
+  }
+
+  @media (max-width: 720px) {
+    .scene {
+      flex-direction: column;
+      gap: 28px;
+    }
+  }
+
+  /* ---------- envelope ---------- */
+  .envelope-wrap {
+    position: relative;
+    width: 360px;
+    max-width: 86vw;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .envelope-wrap:focus-visible .envelope-body {
+    outline: 2px solid var(--color-sage);
+    outline-offset: 4px;
+  }
+
+  .label-above {
+    text-align: center;
+    font-family: 'Caveat', cursive;
+    font-size: 30px;
+    color: var(--color-ink-soft);
+    margin-bottom: 14px;
+    letter-spacing: 0.3px;
+    transition: opacity 500ms ease;
+  }
+
+  .envelope {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 3 / 2;
+    animation: envelope-float 5s ease-in-out infinite;
+  }
+
+  .envelope-wrap.open .envelope,
+  .envelope-wrap.closing .envelope {
+    animation-play-state: paused;
+  }
+
+  @keyframes envelope-float {
+    0%, 100% { transform: translate(0, 0); }
+    33% { transform: translate(3px, -5px) rotate(0.5deg); }
+    66% { transform: translate(-2px, -3px) rotate(-0.5deg); }
+  }
+
+  .envelope-body {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(160deg, #cdb088 0%, var(--color-kraft) 55%, #bb9968 100%);
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+    z-index: 2;
+  }
+
+  .envelope-body::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(115deg, transparent 46%, rgba(255,255,255,0.10) 50%, transparent 54%),
+      linear-gradient(245deg, transparent 46%, rgba(58,46,38,0.06) 50%, transparent 54%);
+  }
+
+  .envelope-shadow-line {
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    height: 60%;
+    background: linear-gradient(0deg, rgba(58,46,38,0.10), transparent);
+    pointer-events: none;
+  }
+
+  .flap {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 56%;
+    background: linear-gradient(160deg, #d7bb91, var(--color-kraft));
+    border: 1px solid var(--color-border-strong);
+    border-top: none;
+    clip-path: polygon(0 0, 100% 0, 50% 100%);
+    transform-origin: top center;
+    will-change: transform, opacity;
+    transition:
+      transform 700ms cubic-bezier(0.65, 0, 0.35, 1),
+      opacity 700ms cubic-bezier(0.65, 0, 0.35, 1);
+    z-index: 4;
+    box-shadow: 0 2px 6px rgba(58,46,38,0.10);
+  }
+
+  .envelope-wrap.open .flap {
+    transform: translateY(-18%) scaleY(0.2);
+    opacity: 0;
+  }
+
+  .seal {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 58px;
+    height: 58px;
+    transform: translate(-50%, -46%) scale(1);
+    z-index: 6;
+    padding: 0;
+    margin: 0;
+    border: none;
+    background: radial-gradient(circle at 30% 28%, #a4504f, var(--color-seal) 58%, var(--color-seal-dark) 100%);
+    border-radius: 50%;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    font: inherit;
+    box-shadow: 0 2px 5px rgba(58,46,38,0.25), inset 0 1px 1px rgba(255,255,255,0.18);
+    will-change: transform, opacity, background-color, box-shadow;
+    transition:
+      transform 700ms cubic-bezier(0.68, -0.55, 0.265, 1.55),
+      background 300ms ease,
+      box-shadow 300ms ease,
+      opacity 500ms ease 150ms;
+  }
+
+  .seal:hover {
+    transform: translate(-50%, -46%) scale(1.05);
+    box-shadow: 0 3px 7px rgba(58,46,38,0.28), inset 0 1px 1px rgba(255,255,255,0.2);
+  }
+
+  .seal:focus-visible {
+    outline: 2px solid var(--color-sage);
+    outline-offset: 4px;
+  }
+
+  .seal:active {
+    transform: translate(-50%, -46%) scale(0.95);
+  }
+
+  .seal-mark {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Caveat', cursive;
+    font-size: 24px;
+    color: rgba(246,241,231,0.9);
+    z-index: 7;
+    pointer-events: none;
+  }
+
+  .envelope-wrap.open .seal {
+    transform: translate(-50%, -140%) scale(1.2) rotate(20deg);
+    background: radial-gradient(circle at 30% 28%, #ff6b6b, #e63946 58%, #9e2a2b 100%);
+    box-shadow: 0 10px 25px rgba(230, 57, 70, 0.6), inset 0 1px 1px rgba(255,255,255,0.4);
+    opacity: 0;
+  }
+
+  .envelope-wrap.open .label-above {
+    opacity: 0;
+  }
+
+  /* ---------- the letter (Envelope Pop Animation) ---------- */
+  .letter-pop {
+    position: absolute;
+    left: 50%;
+    bottom: 30%;
+    width: 86%;
+    transform: translate(-50%, 0) scale(0.78) rotate(-1.5deg);
+    opacity: 0;
+    z-index: 1;
+    pointer-events: none;
+    will-change: transform, opacity;
+  }
+
+  .envelope-wrap.open .letter-pop {
+    animation: letter-rise 1100ms cubic-bezier(0.16, 0.84, 0.32, 1) 350ms forwards;
+  }
+
+  .envelope-wrap.closing .letter-pop {
+    animation: letter-descend 600ms cubic-bezier(0.55, 0, 0.85, 0.35) forwards;
+  }
+
+  @keyframes letter-rise {
+    0% { transform: translate(-50%, 0) scale(0.78) rotate(-1.5deg); opacity: 0; }
+    55% { opacity: 1; }
+    100% { transform: translate(-50%, -150px) scale(1) rotate(0deg); opacity: 1; }
+  }
+
+  @keyframes letter-descend {
+    0% { transform: translate(-50%, -150px) scale(1) rotate(0deg); opacity: 1; }
+    100% { transform: translate(-50%, 0) scale(0.78) rotate(-1.5deg); opacity: 0; }
+  }
+
+  .letter-pop img {
+    width: 100%;
+    display: block;
+    border-radius: var(--radius-xs);
+    box-shadow: var(--shadow-sm);
+  }
+
+  /* ---------- Full Letter Overlay (Fanned Stack) ---------- */
+  .letter-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(58, 46, 38, 0.0);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+    pointer-events: none;
+    transition: background 600ms ease;
+  }
+
+  .letter-overlay.visible {
+    background: rgba(40, 32, 26, 0.75); 
+    pointer-events: auto;
+  }
+
+  .letter-frame {
+    position: relative;
+    width: 100%;
+    max-width: 800px;
+    height: 80vh;
+    transform: translateY(28px) scale(0.92);
+    opacity: 0;
+    transition: transform 650ms cubic-bezier(0.22, 0.61, 0.36, 1), opacity 550ms ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+  }
+
+  .letter-overlay.visible .letter-frame {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+
+  /* Wrapper for the stack and arrows */
+  .stack-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 60px; /* Space for the arrows */
+  }
+
+  /* The actual fanned stack container */
+  .card-stack {
+    position: relative;
+    width: min(100%, 450px);
+    height: 100%;
+    perspective: 1000px;
+  }
+
+  .card-stack img {
+    position: absolute;
+    bottom: 0; 
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain; 
+    border-radius: var(--radius-xs);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    background: var(--color-paper);
+    transform-origin: center 95%; 
+    transition: transform 0.6s cubic-bezier(0.22, 0.61, 0.36, 1),
+                opacity 0.4s ease,
+                z-index 0s 0.1s; 
+    will-change: transform, opacity, z-index;
+  }
+
+  /* Navigation Arrows - UPDATED FOR VISIBILITY */
+  .nav-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(246, 241, 231, 0.85); /* Bright creamy paper color */
+    border: 2px solid var(--color-border-strong); /* Distinct kraft border */
+    color: var(--color-ink); /* Dark ink for the arrow icon */
+    font-size: 20px;
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    cursor: pointer;
+    backdrop-filter: blur(4px);
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5); /* Heavy drop shadow so it pops off the background */
+    transition: all var(--transition-fast);
+  }
+
+  .nav-arrow:hover {
+    background: var(--color-paper); /* Fully solid on hover */
+    border-color: var(--color-ink); /* Darkens the border to match the icon */
+    transform: translateY(-50%) scale(1.05);
+  }
+
+  .nav-arrow:active {
+    transform: translateY(-50%) scale(0.95);
+  }
+
+  .nav-arrow:disabled {
+    opacity: 0;
+    cursor: default;
+    pointer-events: none;
+  }
+
+  .prev-arrow { left: 0px; }
+  .next-arrow { right: 0px; }
+
+  @media (max-width: 720px) {
+    .stack-wrapper { padding: 0 10px; }
+    .prev-arrow { left: -10px; }
+    .next-arrow { right: -10px; }
+  }
+
+  .close-letter {
+    flex: 0 0 auto;
+    background: rgba(246,241,231,0.1);
+    border: 1px solid rgba(246,241,231,0.5);
+    color: var(--color-paper);
+    font-family: 'Lora', serif;
+    font-size: var(--text-sm);
+    padding: 8px 24px;
+    border-radius: var(--radius-full, 999px);
+    cursor: pointer;
+    backdrop-filter: blur(4px);
+    transition: background-color var(--transition-base), border-color var(--transition-base), transform var(--transition-fast);
+    z-index: 100;
+  }
+  .close-letter:hover {
+    background: rgba(246,241,231,0.2);
+    border-color: rgba(246,241,231,0.9);
+  }
+  .close-letter:active { transform: scale(0.97); }
+
+
+  /* ========================================================
+     90s RETRO MUSIC PANEL (Envelope/Kraft color palette) 
+     ======================================================== */
+  
+  .music-panel {
+    width: 270px;
+    flex: 0 0 auto;
+    background: #cdb088; 
+    border-top: 2px solid #e8d0ae;
+    border-left: 2px solid #e8d0ae;
+    border-right: 2px solid #5b4c40;
+    border-bottom: 2px solid #5b4c40;
+    box-shadow: inset -1px -1px #8a6c47, inset 1px 1px #f5e4cc, 2px 2px 0px rgba(58, 46, 38, 0.3);
+    padding: 3px;
+    font-family: 'MS Sans Serif', Tahoma, Geneva, sans-serif;
+    color: var(--color-ink);
+    transition: none; 
+    border-radius: 0;
+  }
+
+  .music-panel:hover {
+    box-shadow: inset -1px -1px #8a6c47, inset 1px 1px #f5e4cc, 2px 2px 0px rgba(58, 46, 38, 0.3);
+    transform: none;
+  }
+
+  .music-eyebrow {
+    background: var(--color-ink); 
+    color: var(--color-paper);
+    font-size: 12px;
+    font-weight: bold;
+    letter-spacing: 0;
+    text-transform: none;
+    padding: 3px 6px;
+    margin: 0 0 6px 0;
+    display: flex;
+    align-items: center;
+  }
+
+  .music-date {
+    font-size: 11px;
+    color: var(--color-ink);
+    margin: 0 4px 8px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid #8a6c47;
+    box-shadow: 0 1px 0 #e8d0ae; 
+  }
+
+  .music-section-label {
+    font-size: 11px;
+    letter-spacing: 0;
+    text-transform: none;
+    color: var(--color-ink);
+    margin: 8px 4px 2px;
+    font-weight: normal;
+  }
+
+  .now-playing {
+    background: var(--color-ink);
+    border-top: 2px solid #5b4c40;
+    border-left: 2px solid #5b4c40;
+    border-right: 2px solid #e8d0ae;
+    border-bottom: 2px solid #e8d0ae;
+    padding: 6px;
+    margin: 0 4px 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .now-playing .bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 2px;
+    height: 12px;
+  }
+
+  .now-playing .bars span {
+    width: 4px;
+    background: var(--color-kraft); 
+    border-radius: 0;
+    animation: bar-bounce 1.1s ease-in-out infinite;
+  }
+  
+  .now-playing.paused .bars span {
+    animation-play-state: paused;
+    background: #7a634a; 
+  }
+
+  .now-playing .bars span:nth-child(1) { height: 40%; animation-delay: 0s; }
+  .now-playing .bars span:nth-child(2) { height: 100%; animation-delay: 0.15s; }
+  .now-playing .bars span:nth-child(3) { height: 65%; animation-delay: 0.3s; }
+
+  @keyframes bar-bounce {
+    0%, 100% { transform: scaleY(0.4); }
+    50% { transform: scaleY(1); }
+  }
+
+  .now-playing-label {
+    font-size: 11px;
+    color: var(--color-kraft);
+    font-family: 'Courier New', Courier, monospace;
+    font-style: normal;
+    text-transform: uppercase;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .track-list {
+    background: var(--color-paper);
+    border-top: 2px solid #5b4c40;
+    border-left: 2px solid #5b4c40;
+    border-right: 2px solid #e8d0ae;
+    border-bottom: 2px solid #e8d0ae;
+    padding: 2px;
+    margin: 0 4px;
+    max-height: 140px;
+    overflow-y: auto;
+  }
+
+  .track-list::-webkit-scrollbar { width: 14px; }
+  .track-list::-webkit-scrollbar-track { 
+    background: var(--color-paper-dim); 
+    border-left: 1px solid var(--color-paper); 
+  }
+  .track-list::-webkit-scrollbar-thumb { 
+    background: #cdb088; 
+    border-top: 1px solid #e8d0ae; 
+    border-left: 1px solid #e8d0ae; 
+    border-right: 1px solid #5b4c40; 
+    border-bottom: 1px solid #5b4c40; 
+  }
+
+  .track-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 2px 4px;
+    border-radius: 0;
+    text-decoration: none;
+    color: var(--color-ink);
+    transition: none; 
+    cursor: pointer;
+  }
+
+  .track-row:hover {
+    background-color: var(--color-ink); 
+    color: var(--color-paper);
+  }
+
+  .track-row img {
+    width: 32px;
+    height: 32px;
+    border-radius: 0;
+    border: 1px solid #8a6c47;
+    object-fit: cover;
+    flex: 0 0 auto;
+    box-shadow: none;
+  }
+
+  .track-meta {
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+
+  .track-title {
+    font-size: 11px;
+    font-weight: normal;
+    color: inherit;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin: 0;
+  }
+
+  .track-artist {
+    font-size: 10px;
+    color: var(--color-ink-soft);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin: 0;
+  }
+
+  .track-row:hover .track-artist,
+  .track-row:hover .track-state {
+    color: var(--color-kraft);
+  }
+
+  .track-state {
+    font-size: 11px;
+    color: var(--color-ink-soft);
+    font-style: italic;
+    padding: 8px 4px;
+  }
+
+  .player-bar {
+    margin: 8px 4px 0;
+    padding-top: 0;
+    border-top: none;
+    display: none;
+  }
+  .player-bar.active { display: block; }
+
+  .player-bar audio {
+    width: 100%;
+    height: 28px;
+    border-radius: 0;
+  }
+
+  .update-notice {
+    font-size: 10px;
+    color: var(--color-ink-soft);
+    text-align: right;
+    margin: 6px 4px 2px;
+    font-style: normal;
+  }
+
+  @media (max-width: 720px) {
+    .music-panel { width: 100%; max-width: 360px; }
+  }
+
+</style>
+</head>
+<body>
+
+<div class="stage">
+  <div class="scene">
+
+    <div>
+      <p class="label-above">for you</p>
+      <div class="envelope-wrap" id="envelopeWrap">
+        <div class="envelope">
+          
+          <div class="letter-pop" id="letterPop">
+            <img src="letter1.jpg" alt="Letter Page 1" />
+          </div>
+
+          <div class="envelope-body">
+            <div class="envelope-shadow-line"></div>
+          </div>
+          <div class="flap"></div>
+          <button class="seal" id="sealButton" type="button" aria-label="Open the letter" aria-pressed="false">
+            <span class="seal-mark">M</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <aside class="music-panel" aria-label="Today's love songs">
+      <p class="music-eyebrow">💿 Media Player</p>
+      <p class="music-date" id="todayDate"></p>
+
+      <div class="now-playing paused" id="nowPlayingRow" style="display:none;">
+        <div class="bars"><span></span><span></span><span></span></div>
+        <span class="now-playing-label" id="nowPlayingLabel"></span>
+      </div>
+
+      <p class="music-section-label">Local Files (OPM)</p>
+      <div class="track-list" id="opmTrackList">
+        <p class="track-state">Loading disk…</p>
+      </div>
+
+      <p class="music-section-label">Daily Mix</p>
+      <div class="track-list" id="trackList">
+        <p class="track-state">Loading network stream…</p>
+      </div>
+
+      <div class="player-bar" id="playerBar">
+        <audio id="audioEl" controls preload="none" volume="0.5"></audio>
+      </div>
+      
+      <p class="update-notice">Status: Updates everyday</p>
+    </aside>
+
+  </div>
+</div>
+
+<div class="letter-overlay" id="letterOverlay">
+  <div class="letter-frame">
+    
+    <div class="stack-wrapper">
+      <button class="nav-arrow prev-arrow" id="prevPage" aria-label="Previous Page">&#10094;</button>
+
+      <div class="card-stack" id="letterStack">
+        <img src="letter1.jpg" alt="Letter Page 1" />
+        <img src="letter2.jpg" alt="Letter Page 2" />
+        <img src="letter3.jpg" alt="Letter Page 3" />
+        <img src="letter4.jpg" alt="Letter Page 4" />
+      </div>
+
+      <button class="nav-arrow next-arrow" id="nextPage" aria-label="Next Page">&#10095;</button>
+    </div>
+
+    <button class="close-letter" id="closeLetter">close</button>
+  </div>
+</div>
+
+<script>
+(function () {
+
+  /* ---------------- envelope open / close toggle ---------------- */
+  const wrap = document.getElementById('envelopeWrap');
+  const sealButton = document.getElementById('sealButton');
+  const overlay = document.getElementById('letterOverlay');
+  const closeBtn = document.getElementById('closeLetter');
+  let isOpen = false;
+  let isAnimating = false;
+
+  /* --- Fanned Stack Logic --- */
+  const prevBtn = document.getElementById('prevPage');
+  const nextBtn = document.getElementById('nextPage');
+  const stack = document.getElementById('letterStack');
+  const cards = Array.from(stack.children);
+  const totalPages = cards.length;
+  let currentPage = 0;
+
+  function updateStack() {
+    cards.forEach((card, index) => {
+      // Calculate how far away this card is from the front (currently active) card
+      let diff = index - currentPage;
+      
+      // Calculate visual properties to create the fanned out playing card effect
+      let zIndex = 10 - Math.abs(diff);
+      let translateX = diff * 45; // Move left or right (pixels)
+      let translateY = Math.abs(diff) * 12; // Push down slightly if it's behind (pixels)
+      let rotate = diff * 8; // Rotate out from the center (degrees)
+      let scale = 1 - (Math.abs(diff) * 0.03); // Slightly smaller if it's in the back
+      
+      // Hide cards that are way too far back in the stack
+      let opacity = Math.abs(diff) > 2 ? 0 : 1; 
+
+      card.style.zIndex = zIndex;
+      card.style.opacity = opacity;
+      card.style.transform = `translateX(${translateX}px) translateY(${translateY}px) rotate(${rotate}deg) scale(${scale})`;
+    });
+
+    // Disable arrows if we hit the end of the stack
+    prevBtn.disabled = currentPage === 0;
+    nextBtn.disabled = currentPage === totalPages - 1;
+  }
+
+  prevBtn.addEventListener('click', () => {
+    if (currentPage > 0) {
+      currentPage--;
+      updateStack();
+    }
+  });
+
+  nextBtn.addEventListener('click', () => {
+    if (currentPage < totalPages - 1) {
+      currentPage++;
+      updateStack();
+    }
+  });
+
+  // Initialize the fan position
+  updateStack();
+
+  /* --- Envelope Logic --- */
+  function openEnvelope() {
+    if (isOpen || isAnimating) return;
+    isAnimating = true;
+    isOpen = true;
+    wrap.classList.remove('closing');
+    wrap.classList.add('open');
+    sealButton.setAttribute('aria-pressed', 'true');
+    sealButton.setAttribute('aria-label', 'Close the letter');
+
+    setTimeout(() => {
+      overlay.classList.add('visible');
+      isAnimating = false;
+    }, 1500);
+  }
+
+  function closeEnvelope() {
+    if (!isOpen || isAnimating) return;
+    isAnimating = true;
+    isOpen = false;
+    overlay.classList.remove('visible');
+    sealButton.setAttribute('aria-pressed', 'false');
+    sealButton.setAttribute('aria-label', 'Open the letter');
+
+    wrap.classList.remove('open');
+    wrap.classList.add('closing');
+
+    // Automatically put Page 1 back to the front when closing the envelope
+    setTimeout(() => {
+      currentPage = 0;
+      updateStack(); 
+    }, 500);
+
+    setTimeout(() => {
+      wrap.classList.remove('closing');
+      isAnimating = false;
+    }, 650);
+  }
+
+  function toggleEnvelope() {
+    if (isOpen) {
+      closeEnvelope();
+    } else {
+      openEnvelope();
+    }
+  }
+
+  sealButton.addEventListener('click', toggleEnvelope);
+  closeBtn.addEventListener('click', closeEnvelope);
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) closeEnvelope();
+  });
+
+  /* ---------------- date label ---------------- */
+  const todayDate = document.getElementById('todayDate');
+  const today = new Date();
+  todayDate.textContent = today.toLocaleDateString(undefined, {
+    weekday: 'long', month: 'long', day: 'numeric'
+  });
+
+  /* ---------------- audio handling & custom animations ---------------- */
+  const DEFAULT_VOLUME = 0.45;
+  const audioElInit = document.getElementById('audioEl');
+  const nowPlayingRow = document.getElementById('nowPlayingRow');
+
+  if (audioElInit) {
+    audioElInit.volume = DEFAULT_VOLUME;
+
+    audioElInit.addEventListener('play', () => {
+      nowPlayingRow.classList.remove('paused');
+    });
+    audioElInit.addEventListener('pause', () => {
+      nowPlayingRow.classList.add('paused');
+    });
+    audioElInit.addEventListener('ended', () => {
+      nowPlayingRow.classList.add('paused');
+    });
+  }
+
+  /* ---------------- daily song list via Deezer ---------------- */
+  const FALLBACK_TRACKS = [
+    { title: "Perfect", artist: "Ed Sheeran" },
+    { title: "All of Me", artist: "John Legend" },
+    { title: "Just the Way You Are", artist: "Bruno Mars" },
+    { title: "Lover", artist: "Taylor Swift" },
+    { title: "Thinking Out Loud", artist: "Ed Sheeran" },
+    { title: "A Thousand Years", artist: "Christina Perri" },
+    { title: "Can't Help Falling in Love", artist: "Elvis Presley" },
+    { title: "Make You Feel My Love", artist: "Adele" }
+  ];
+
+  const INSERT_TRACKS = [
+    { title: "We Belong Together", artist: "Mariah Carey" },
+    { title: "My First and Last", artist: "NCT Dream" }
+  ];
+
+  function dayIndexSeed() {
+    const start = new Date(today.getFullYear(), 0, 0);
+    const diff = today - start;
+    return Math.floor(diff / (1000 * 60 * 60 * 24));
+  }
+
+  function jsonpFetch(url) {
+    return new Promise((resolve, reject) => {
+      const cbName = 'dz_cb_' + Math.random().toString(36).slice(2);
+      const script = document.createElement('script');
+      let settled = false;
+
+      window[cbName] = function (data) {
+        settled = true;
+        resolve(data);
+        cleanup();
+      };
+
+      function cleanup() {
+        delete window[cbName];
+        if (script.parentNode) script.parentNode.removeChild(script);
+      }
+
+      script.onerror = () => {
+        if (!settled) { reject(new Error('jsonp script error')); cleanup(); }
+      };
+
+      script.src = url + (url.includes('?') ? '&' : '?') + 'output=jsonp&callback=' + cbName;
+      document.body.appendChild(script);
+
+      setTimeout(() => {
+        if (!settled) { reject(new Error('jsonp timeout')); cleanup(); }
+      }, 7000);
+    });
+  }
+
+  async function fetchSpecificTracks() {
+    const results = [];
+    for (const track of INSERT_TRACKS) {
+      try {
+        const res = await jsonpFetch(
+          'https://api.deezer.com/search/track?q=' + encodeURIComponent(track.title + ' ' + track.artist)
+        );
+        const match = (res && res.data && res.data[0]) || null;
+        if (match) {
+          results.push({
+            title: match.title || track.title,
+            artist: (match.artist && match.artist.name) || track.artist,
+            cover: match.album && (match.album.cover_small || match.album.cover),
+            preview: match.preview
+          });
+        } else {
+          results.push({ title: track.title, artist: track.artist });
+        }
+      } catch (err) {
+        results.push({ title: track.title, artist: track.artist });
+      }
+    }
+    return results;
+  }
+
+  function renderTracks(tracks, listEl) {
+    const list = listEl || document.getElementById('trackList');
+    list.innerHTML = '';
+
+    if (!tracks || !tracks.length) {
+      list.innerHTML = '<p class="track-state">Error: No files found</p>';
+      return;
+    }
+
+    tracks.slice(0, 8).forEach((t) => {
+      const row = document.createElement('div');
+      row.className = 'track-row';
+      row.innerHTML = `
+        <img src="${t.cover || ''}" alt="" loading="lazy" onerror="this.style.visibility='hidden'">
+        <div class="track-meta">
+          <p class="track-title">${escapeHtml(t.title)}</p>
+          <p class="track-artist">${escapeHtml(t.artist)}</p>
+        </div>
+      `;
+      if (t.preview) {
+        row.addEventListener('click', () => playPreview(t));
+      }
+      list.appendChild(row);
+    });
+  }
+
+  function escapeHtml(s) {
+    return String(s || '').replace(/[&<>"']/g, (c) => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    }[c]));
+  }
+
+  function playPreview(track) {
+    const bar = document.getElementById('playerBar');
+    const audio = document.getElementById('audioEl');
+    const nowRow = document.getElementById('nowPlayingRow');
+    const nowLabel = document.getElementById('nowPlayingLabel');
+
+    audio.volume = DEFAULT_VOLUME;
+    audio.src = track.preview;
+    bar.classList.add('active');
+    nowRow.style.display = 'flex';
+    nowRow.classList.remove('paused'); 
+    nowLabel.textContent = track.title + ' - ' + track.artist;
+    audio.play().catch(() => {});
+  }
+
+  async function loadDailyPlaylist() {
+    let finalTracks = [];
+    try {
+      const searchRes = await jsonpFetch(
+        'https://api.deezer.com/search/playlist?q=love%20songs%20english%20songs'
+      );
+      const playlists = (searchRes && searchRes.data) || [];
+      if (!playlists.length) throw new Error('no playlists found');
+
+      const seed = dayIndexSeed();
+      const chosen = playlists[seed % playlists.length];
+
+      const tracksRes = await jsonpFetch(
+        'https://api.deezer.com/playlist/' + chosen.id
+      );
+      const rawTracks = (tracksRes && tracksRes.tracks && tracksRes.tracks.data) || [];
+      if (!rawTracks.length) throw new Error('no tracks in playlist');
+
+      finalTracks = rawTracks.map((tr) => ({
+        title: tr.title,
+        artist: tr.artist && tr.artist.name,
+        cover: tr.album && (tr.album.cover_small || tr.album.cover),
+        preview: tr.preview
+      })).slice(0, 6); 
+    } catch (err) {
+      finalTracks = FALLBACK_TRACKS.slice(0, 6);
+    }
+
+    const specialInjections = await fetchSpecificTracks();
+    finalTracks.push(...specialInjections);
+
+    finalTracks.sort(() => Math.random() - 0.5);
+
+    renderTracks(finalTracks);
+  }
+
+  const OPM_PICKS = [
+    { title: "Panalangin", artist: "Apo Hiking Society" },
+    { title: "Umuwi Ka Na Baby", artist: "Orange and Lemons" }
+  ];
+
+  async function loadOpmPicks() {
+    const results = [];
+
+    for (const pick of OPM_PICKS) {
+      try {
+        const res = await jsonpFetch(
+          'https://api.deezer.com/search/track?q=' +
+            encodeURIComponent(pick.title + ' ' + pick.artist)
+        );
+        const match = (res && res.data && res.data[0]) || null;
+
+        if (match) {
+          results.push({
+            title: match.title || pick.title,
+            artist: (match.artist && match.artist.name) || pick.artist,
+            cover: match.album && (match.album.cover_small || match.album.cover),
+            preview: match.preview
+          });
+        } else {
+          results.push({ title: pick.title, artist: pick.artist });
+        }
+      } catch (err) {
+        results.push({ title: pick.title, artist: pick.artist });
+      }
+    }
+
+    renderTracks(results, document.getElementById('opmTrackList'));
+  }
+
+  loadDailyPlaylist();
+  loadOpmPicks();
+
+})();
+</script>
+
+</body>
+</html>
