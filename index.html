@@ -1,0 +1,862 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>for you</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600&family=Lora:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+
+  :root {
+    /* Brand and accents */
+    --color-ink:        #3a2e26;
+    --color-ink-soft:   #5b4c40;
+    --color-paper:      #f6f1e7;
+    --color-paper-dim:  #ece3d2;
+    --color-kraft:      #c9a87c;
+    --color-kraft-dark: #a9824f;
+    --color-seal:       #8b3a3a;
+    --color-seal-dark:  #6e2c2c;
+    --color-sage:       #6b7a5e;
+
+    /* Borders */
+    --color-border:        #d8c6a3;
+    --color-border-strong: #b89a68;
+
+    /* Shadows, kept subtle per house style */
+    --shadow-xs: 0 1px 2px rgba(58, 46, 38, 0.08);
+    --shadow-sm: 0 3px 10px rgba(58, 46, 38, 0.10), 0 1px 2px rgba(58, 46, 38, 0.06);
+    --shadow-md: 0 10px 28px rgba(58, 46, 38, 0.16), 0 2px 6px rgba(58, 46, 38, 0.08);
+    --shadow-lg: 0 18px 50px rgba(58, 46, 38, 0.22), 0 6px 14px rgba(58, 46, 38, 0.10);
+
+    /* Radius scale */
+    --radius-xs: 4px;
+    --radius-sm: 7px;
+    --radius-md: 12px;
+    --radius-lg: 18px;
+    --radius-xl: 26px;
+
+    /* Transitions */
+    --transition-fast: 120ms ease;
+    --transition-base: 220ms ease;
+    --transition-slow: 650ms cubic-bezier(0.22, 0.61, 0.36, 1);
+
+    /* Type */
+    --text-xs: 12px;
+    --text-sm: 14px;
+    --text-base: 16px;
+    --text-md: 18px;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background: var(--color-paper);
+    font-family: 'Lora', Georgia, serif;
+    color: var(--color-ink);
+    overflow: hidden;
+  }
+
+  body {
+    background-image:
+      radial-gradient(circle at 18% 20%, rgba(201,168,124,0.16), transparent 45%),
+      radial-gradient(circle at 82% 78%, rgba(107,122,94,0.10), transparent 50%);
+  }
+
+  .stage {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+
+  /* ---------- layout: envelope + music panel side by side ---------- */
+  .scene {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 48px;
+    width: 100%;
+    max-width: 980px;
+  }
+
+  @media (max-width: 720px) {
+    .scene {
+      flex-direction: column;
+      gap: 28px;
+    }
+  }
+
+  /* ---------- envelope ---------- */
+  .envelope-wrap {
+    position: relative;
+    width: 360px;
+    max-width: 86vw;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .envelope-wrap:focus-visible .envelope-body {
+    outline: 2px solid var(--color-sage);
+    outline-offset: 4px;
+  }
+
+  .label-above {
+    text-align: center;
+    font-family: 'Caveat', cursive;
+    font-size: 30px;
+    color: var(--color-ink-soft);
+    margin-bottom: 14px;
+    letter-spacing: 0.3px;
+    transition: opacity 500ms ease;
+  }
+
+  .envelope {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 3 / 2;
+    will-change: transform;
+    animation: envelope-float 4.2s ease-in-out infinite;
+  }
+
+  .envelope-wrap:hover .envelope {
+    animation-play-state: paused;
+  }
+
+  .envelope-wrap.open .envelope,
+  .envelope-wrap.closing .envelope {
+    animation: none;
+    transform: translateY(0);
+  }
+
+  @keyframes envelope-float {
+    0%   { transform: translateY(0); }
+    50%  { transform: translateY(-8px); }
+    100% { transform: translateY(0); }
+  }
+
+  .envelope-body {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(160deg, #cdb088 0%, var(--color-kraft) 55%, #bb9968 100%);
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+    z-index: 2;
+  }
+
+  .envelope-body::before {
+    /* center seam lines for texture, like a real envelope */
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(115deg, transparent 46%, rgba(255,255,255,0.10) 50%, transparent 54%),
+      linear-gradient(245deg, transparent 46%, rgba(58,46,38,0.06) 50%, transparent 54%);
+  }
+
+  .envelope-shadow-line {
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    height: 60%;
+    background: linear-gradient(0deg, rgba(58,46,38,0.10), transparent);
+    pointer-events: none;
+  }
+
+  .flap {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 56%;
+    background: linear-gradient(160deg, #d7bb91, var(--color-kraft));
+    border: 1px solid var(--color-border-strong);
+    border-top: none;
+    clip-path: polygon(0 0, 100% 0, 50% 100%);
+    transform-origin: top center;
+    will-change: transform, opacity;
+    transition:
+      transform 700ms cubic-bezier(0.65, 0, 0.35, 1),
+      opacity 700ms cubic-bezier(0.65, 0, 0.35, 1);
+    z-index: 4;
+    box-shadow: 0 2px 6px rgba(58,46,38,0.10);
+  }
+
+  .envelope-wrap.open .flap {
+    transform: translateY(-18%) scaleY(0.2);
+    opacity: 0;
+  }
+
+  .seal {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 58px;
+    height: 58px;
+    transform: translate(-50%, -46%) scale(1);
+    z-index: 6;
+    padding: 0;
+    margin: 0;
+    border: none;
+    background: radial-gradient(circle at 30% 28%, #a4504f, var(--color-seal) 58%, var(--color-seal-dark) 100%);
+    border-radius: 50%;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    font: inherit;
+    box-shadow: 0 2px 5px rgba(58,46,38,0.25), inset 0 1px 1px rgba(255,255,255,0.18);
+    will-change: transform, opacity;
+    transition:
+      transform 600ms cubic-bezier(0.34, 1.1, 0.4, 1),
+      opacity 450ms ease,
+      box-shadow var(--transition-base);
+  }
+
+  .seal:hover {
+    transform: translate(-50%, -46%) scale(1.05);
+    box-shadow: 0 3px 7px rgba(58,46,38,0.28), inset 0 1px 1px rgba(255,255,255,0.2);
+  }
+
+  .seal:focus-visible {
+    outline: 2px solid var(--color-sage);
+    outline-offset: 4px;
+  }
+
+  .seal:active {
+    transform: translate(-50%, -46%) scale(0.95);
+  }
+
+  .seal-mark {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Caveat', cursive;
+    font-size: 24px;
+    color: rgba(246,241,231,0.9);
+    z-index: 7;
+    pointer-events: none;
+  }
+
+  .envelope-wrap.open .seal {
+    transform: translate(-50%, -120%) scale(0.55);
+    opacity: 0;
+  }
+
+  .envelope-wrap.open .label-above {
+    opacity: 0;
+  }
+
+  /* ---------- the letter, rises smoothly up out of the envelope ---------- */
+  .letter-pop {
+    position: absolute;
+    left: 50%;
+    bottom: 30%;
+    width: 86%;
+    transform: translate(-50%, 0) scale(0.78) rotate(-1.5deg);
+    opacity: 0;
+    z-index: 1;
+    pointer-events: none;
+    will-change: transform, opacity;
+  }
+
+  .envelope-wrap.open .letter-pop {
+    animation: letter-rise 1100ms cubic-bezier(0.16, 0.84, 0.32, 1) 350ms forwards;
+  }
+
+  .envelope-wrap.closing .letter-pop {
+    animation: letter-descend 600ms cubic-bezier(0.55, 0, 0.85, 0.35) forwards;
+  }
+
+  @keyframes letter-rise {
+    0% {
+      transform: translate(-50%, 0) scale(0.78) rotate(-1.5deg);
+      opacity: 0;
+    }
+    55% {
+      opacity: 1;
+    }
+    100% {
+      transform: translate(-50%, -150px) scale(1) rotate(0deg);
+      opacity: 1;
+    }
+  }
+
+  @keyframes letter-descend {
+    0% {
+      transform: translate(-50%, -150px) scale(1) rotate(0deg);
+      opacity: 1;
+    }
+    100% {
+      transform: translate(-50%, 0) scale(0.78) rotate(-1.5deg);
+      opacity: 0;
+    }
+  }
+
+  .letter-pop img {
+    width: 100%;
+    display: block;
+    border-radius: var(--radius-xs);
+    box-shadow: var(--shadow-sm);
+  }
+
+  /* ---------- full letter overlay, opens after pop animation ---------- */
+  .letter-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(58, 46, 38, 0.0);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+    pointer-events: none;
+    transition: background 600ms ease;
+  }
+
+  .letter-overlay.visible {
+    background: rgba(40, 32, 26, 0.55);
+    pointer-events: auto;
+  }
+
+  .letter-frame {
+    position: relative;
+    width: min(86vw, 520px);
+    max-height: 86vh;
+    transform: translateY(28px) scale(0.92);
+    opacity: 0;
+    transition: transform 650ms cubic-bezier(0.22, 0.61, 0.36, 1), opacity 550ms ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .letter-overlay.visible .letter-frame {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+
+  .letter-frame img {
+    width: 100%;
+    max-height: 76vh;
+    object-fit: contain;
+    border-radius: var(--radius-xs);
+    box-shadow: var(--shadow-lg);
+    background: var(--color-paper);
+  }
+
+  .close-letter {
+    margin-top: 16px;
+    background: transparent;
+    border: 1px solid rgba(246,241,231,0.5);
+    color: var(--color-paper);
+    font-family: 'Lora', serif;
+    font-size: var(--text-sm);
+    padding: 8px 18px;
+    border-radius: var(--radius-full, 999px);
+    cursor: pointer;
+    transition: background-color var(--transition-base), border-color var(--transition-base), transform var(--transition-fast);
+  }
+  .close-letter:hover {
+    background: rgba(246,241,231,0.12);
+    border-color: rgba(246,241,231,0.8);
+  }
+  .close-letter:active { transform: scale(0.97); }
+
+  /* ---------- music panel ---------- */
+  .music-panel {
+    width: 250px;
+    flex: 0 0 auto;
+    background: var(--color-paper);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    padding: 18px 18px 16px;
+    transition: box-shadow var(--transition-base), transform var(--transition-base);
+  }
+
+  .music-panel:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+  }
+
+  .music-eyebrow {
+    font-size: var(--text-xs);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-sage);
+    font-weight: 600;
+    margin: 0 0 2px;
+  }
+
+  .music-date {
+    font-size: var(--text-xs);
+    color: var(--color-ink-soft);
+    margin: 0 0 14px;
+  }
+
+  .track-list--secondary {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .now-playing {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 12px;
+  }
+
+  .now-playing .bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 2px;
+    height: 12px;
+  }
+
+  .now-playing .bars span {
+    width: 3px;
+    background: var(--color-sage);
+    border-radius: 1px;
+    animation: bar-bounce 1.1s ease-in-out infinite;
+  }
+  .now-playing .bars span:nth-child(1) { height: 40%; animation-delay: 0s; }
+  .now-playing .bars span:nth-child(2) { height: 100%; animation-delay: 0.15s; }
+  .now-playing .bars span:nth-child(3) { height: 65%; animation-delay: 0.3s; }
+
+  @keyframes bar-bounce {
+    0%, 100% { transform: scaleY(0.4); }
+    50% { transform: scaleY(1); }
+  }
+
+  .now-playing-label {
+    font-size: var(--text-xs);
+    color: var(--color-ink-soft);
+    font-style: italic;
+  }
+
+  .track-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: 190px;
+    overflow-y: auto;
+    padding-right: 2px;
+  }
+
+  .track-list::-webkit-scrollbar { width: 4px; }
+  .track-list::-webkit-scrollbar-thumb { background: var(--color-border-strong); border-radius: 2px; }
+
+  .track-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px;
+    border-radius: var(--radius-sm);
+    text-decoration: none;
+    color: inherit;
+    transition: background-color var(--transition-fast);
+  }
+
+  .track-row:hover {
+    background-color: var(--color-paper-dim);
+  }
+
+  .track-row img {
+    width: 38px;
+    height: 38px;
+    border-radius: var(--radius-xs);
+    object-fit: cover;
+    flex: 0 0 auto;
+    box-shadow: var(--shadow-xs);
+  }
+
+  .track-meta {
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+
+  .track-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-ink);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin: 0;
+  }
+
+  .track-artist {
+    font-size: 11.5px;
+    color: var(--color-ink-soft);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin: 0;
+  }
+
+  .track-state {
+    font-size: var(--text-xs);
+    color: var(--color-ink-soft);
+    font-style: italic;
+    padding: 8px 0;
+  }
+
+  /* audio player, single active track */
+  .player-bar {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--color-border);
+    display: none;
+  }
+  .player-bar.active { display: block; }
+
+  .player-bar audio {
+    width: 100%;
+    height: 30px;
+  }
+
+  @media (max-width: 720px) {
+    .music-panel { width: 100%; max-width: 360px; }
+  }
+
+  /* reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      transition-duration: 1ms !important;
+      animation-duration: 1ms !important;
+      animation-iteration-count: 1 !important;
+    }
+    .envelope {
+      animation: none !important;
+      transform: none !important;
+    }
+  }
+
+</style>
+</head>
+<body>
+
+<div class="stage">
+  <div class="scene">
+
+    <div>
+      <p class="label-above">for you</p>
+      <div class="envelope-wrap" id="envelopeWrap">
+        <div class="envelope">
+          <div class="letter-pop" id="letterPop">
+            <img src="assets/letter.png" alt="" />
+          </div>
+          <div class="envelope-body">
+            <div class="envelope-shadow-line"></div>
+          </div>
+          <div class="flap"></div>
+          <button class="seal" id="sealButton" type="button" aria-label="Open the letter" aria-pressed="false">
+            <span class="seal-mark">s</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <aside class="music-panel" aria-label="Today's love songs">
+      <p class="music-eyebrow">playing today</p>
+      <p class="music-date" id="todayDate"></p>
+
+      <div class="now-playing" id="nowPlayingRow" style="display:none;">
+        <div class="bars"><span></span><span></span><span></span></div>
+        <span class="now-playing-label" id="nowPlayingLabel"></span>
+      </div>
+
+      <div class="track-list" id="opmTrackList">
+        <p class="track-state">loading…</p>
+      </div>
+
+      <div class="track-list track-list--secondary" id="trackList">
+        <p class="track-state">loading today's songs…</p>
+      </div>
+
+      <div class="player-bar" id="playerBar">
+        <audio id="audioEl" controls preload="none"></audio>
+      </div>
+    </aside>
+
+  </div>
+</div>
+
+<div class="letter-overlay" id="letterOverlay">
+  <div class="letter-frame">
+    <img src="assets/letter.png" alt="A handwritten letter" />
+    <button class="close-letter" id="closeLetter">close</button>
+  </div>
+</div>
+
+<script>
+(function () {
+
+  /* ---------------- envelope open / close toggle ---------------- */
+  const wrap = document.getElementById('envelopeWrap');
+  const sealButton = document.getElementById('sealButton');
+  const overlay = document.getElementById('letterOverlay');
+  const closeBtn = document.getElementById('closeLetter');
+  let isOpen = false;
+  let isAnimating = false;
+
+  function openEnvelope() {
+    if (isOpen || isAnimating) return;
+    isAnimating = true;
+    isOpen = true;
+    wrap.classList.remove('closing');
+    wrap.classList.add('open');
+    sealButton.setAttribute('aria-pressed', 'true');
+    sealButton.setAttribute('aria-label', 'Close the letter');
+
+    setTimeout(() => {
+      overlay.classList.add('visible');
+      isAnimating = false;
+    }, 1500);
+  }
+
+  function closeEnvelope() {
+    if (!isOpen || isAnimating) return;
+    isAnimating = true;
+    isOpen = false;
+    overlay.classList.remove('visible');
+    sealButton.setAttribute('aria-pressed', 'false');
+    sealButton.setAttribute('aria-label', 'Open the letter');
+
+    wrap.classList.remove('open');
+    wrap.classList.add('closing');
+
+    setTimeout(() => {
+      wrap.classList.remove('closing');
+      isAnimating = false;
+    }, 650);
+  }
+
+  function toggleEnvelope() {
+    if (isOpen) {
+      closeEnvelope();
+    } else {
+      openEnvelope();
+    }
+  }
+
+  sealButton.addEventListener('click', toggleEnvelope);
+  closeBtn.addEventListener('click', closeEnvelope);
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) closeEnvelope();
+  });
+
+  /* ---------------- date label ---------------- */
+  const todayDate = document.getElementById('todayDate');
+  const today = new Date();
+  todayDate.textContent = today.toLocaleDateString(undefined, {
+    weekday: 'long', month: 'long', day: 'numeric'
+  });
+
+  /* ---------------- audio: lower, comfortable default volume ---------------- */
+  /*
+    Earlier this routed audio through a Web Audio compressor node,
+    but Deezer's preview stream is cross-origin without permissive
+    CORS headers, which mutes audio captured that way in most
+    browsers. Plain volume control on the audio element always
+    works regardless of CORS, so that's what actually plays sound.
+  */
+
+  const DEFAULT_VOLUME = 0.45;
+
+  const audioElInit = document.getElementById('audioEl');
+  if (audioElInit) audioElInit.volume = DEFAULT_VOLUME;
+
+  /* ---------------- daily song list via Deezer ---------------- */
+  /*
+    Approach: ask Deezer's playlist search for English love-song
+    playlists, pick one deterministically based on today's date so
+    everyone sees the same playlist all day and it rotates tomorrow,
+    then fetch that playlist's tracks. Falls back to a curated list
+    if the network call fails for any reason (offline, CORS, etc).
+  */
+
+  const FALLBACK_TRACKS = [
+    { title: "Perfect", artist: "Ed Sheeran" },
+    { title: "All of Me", artist: "John Legend" },
+    { title: "Just the Way You Are", artist: "Bruno Mars" },
+    { title: "Lover", artist: "Taylor Swift" },
+    { title: "Thinking Out Loud", artist: "Ed Sheeran" },
+    { title: "A Thousand Years", artist: "Christina Perri" },
+    { title: "Can't Help Falling in Love", artist: "Elvis Presley" },
+    { title: "Make You Feel My Love", artist: "Adele" }
+  ];
+
+  function dayIndexSeed() {
+    const start = new Date(today.getFullYear(), 0, 0);
+    const diff = today - start;
+    return Math.floor(diff / (1000 * 60 * 60 * 24));
+  }
+
+  function jsonpFetch(url) {
+    return new Promise((resolve, reject) => {
+      const cbName = 'dz_cb_' + Math.random().toString(36).slice(2);
+      const script = document.createElement('script');
+      let settled = false;
+
+      window[cbName] = function (data) {
+        settled = true;
+        resolve(data);
+        cleanup();
+      };
+
+      function cleanup() {
+        delete window[cbName];
+        if (script.parentNode) script.parentNode.removeChild(script);
+      }
+
+      script.onerror = () => {
+        if (!settled) { reject(new Error('jsonp script error')); cleanup(); }
+      };
+
+      script.src = url + (url.includes('?') ? '&' : '?') + 'output=jsonp&callback=' + cbName;
+      document.body.appendChild(script);
+
+      setTimeout(() => {
+        if (!settled) { reject(new Error('jsonp timeout')); cleanup(); }
+      }, 7000);
+    });
+  }
+
+  function renderTracks(tracks, listEl) {
+    const list = listEl || document.getElementById('trackList');
+    list.innerHTML = '';
+
+    if (!tracks || !tracks.length) {
+      list.innerHTML = '<p class="track-state">could not load songs today</p>';
+      return;
+    }
+
+    tracks.slice(0, 8).forEach((t) => {
+      const row = document.createElement('div');
+      row.className = 'track-row';
+      row.innerHTML = `
+        <img src="${t.cover || ''}" alt="" loading="lazy" onerror="this.style.visibility='hidden'">
+        <div class="track-meta">
+          <p class="track-title">${escapeHtml(t.title)}</p>
+          <p class="track-artist">${escapeHtml(t.artist)}</p>
+        </div>
+      `;
+      if (t.preview) {
+        row.style.cursor = 'pointer';
+        row.addEventListener('click', () => playPreview(t));
+      }
+      list.appendChild(row);
+    });
+  }
+
+  function escapeHtml(s) {
+    return String(s || '').replace(/[&<>"']/g, (c) => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    }[c]));
+  }
+
+  function playPreview(track) {
+    const bar = document.getElementById('playerBar');
+    const audio = document.getElementById('audioEl');
+    const nowRow = document.getElementById('nowPlayingRow');
+    const nowLabel = document.getElementById('nowPlayingLabel');
+
+    audio.volume = DEFAULT_VOLUME;
+    audio.src = track.preview;
+    bar.classList.add('active');
+    nowRow.style.display = 'flex';
+    nowLabel.textContent = track.title + ' · ' + track.artist;
+    audio.play().catch(() => {});
+  }
+
+  async function loadDailyPlaylist() {
+    try {
+      const searchRes = await jsonpFetch(
+        'https://api.deezer.com/search/playlist?q=love%20songs%20english%20songs'
+      );
+      const playlists = (searchRes && searchRes.data) || [];
+      if (!playlists.length) throw new Error('no playlists found');
+
+      const seed = dayIndexSeed();
+      const chosen = playlists[seed % playlists.length];
+
+      const tracksRes = await jsonpFetch(
+        'https://api.deezer.com/playlist/' + chosen.id
+      );
+      const rawTracks = (tracksRes && tracksRes.tracks && tracksRes.tracks.data) || [];
+      if (!rawTracks.length) throw new Error('no tracks in playlist');
+
+      const tracks = rawTracks.map((tr) => ({
+        title: tr.title,
+        artist: tr.artist && tr.artist.name,
+        cover: tr.album && (tr.album.cover_small || tr.album.cover),
+        preview: tr.preview
+      }));
+
+      renderTracks(tracks);
+    } catch (err) {
+      renderTracks(FALLBACK_TRACKS);
+    }
+  }
+
+  /* ---------------- pinned OPM picks ---------------- */
+  /*
+    These two stay fixed every day, found by name on Deezer so they
+    come with a playable preview and cover art. If either can't be
+    found (catalog gaps happen), it still shows the title and artist
+    so the picks are never missing, just without a preview to click.
+  */
+
+  const OPM_PICKS = [
+    { title: "Panalangin", artist: "Apo Hiking Society" },
+    { title: "Umuwi Ka Na Baby", artist: "Orange and Lemons" }
+  ];
+
+  async function loadOpmPicks() {
+    const results = [];
+
+    for (const pick of OPM_PICKS) {
+      try {
+        const res = await jsonpFetch(
+          'https://api.deezer.com/search/track?q=' +
+            encodeURIComponent(pick.title + ' ' + pick.artist)
+        );
+        const match = (res && res.data && res.data[0]) || null;
+
+        if (match) {
+          results.push({
+            title: match.title || pick.title,
+            artist: (match.artist && match.artist.name) || pick.artist,
+            cover: match.album && (match.album.cover_small || match.album.cover),
+            preview: match.preview
+          });
+        } else {
+          results.push({ title: pick.title, artist: pick.artist });
+        }
+      } catch (err) {
+        results.push({ title: pick.title, artist: pick.artist });
+      }
+    }
+
+    renderTracks(results, document.getElementById('opmTrackList'));
+  }
+
+  loadDailyPlaylist();
+  loadOpmPicks();
+
+})();
+</script>
+
+</body>
+</html>
